@@ -37,16 +37,16 @@ const CANVAS_COLORS = {
 /* ---- Параметры подъездов по полосам ---- */
 const APPROACH = {
   left: {   /* внутренняя — левые повороты + прямо */
-    N: { lx: CX - 20, qy0: CY - RW - 32, stepX:  0,       stepY: -CAR_GAP },
-    S: { lx: CX + 20, qy0: CY + RW + 32, stepX:  0,       stepY:  CAR_GAP },
-    E: { ly: CY - 20, qx0: CX + RW + 32, stepX:  CAR_GAP, stepY:  0       },
-    W: { ly: CY + 20, qx0: CX - RW - 32, stepX: -CAR_GAP, stepY:  0       },
+    N: { lx: CX - 20, qy0: CY - RW - 42, stepX:  0,       stepY: -CAR_GAP },
+    S: { lx: CX + 20, qy0: CY + RW + 42, stepX:  0,       stepY:  CAR_GAP },
+    E: { ly: CY - 20, qx0: CX + RW + 42, stepX:  CAR_GAP, stepY:  0       },
+    W: { ly: CY + 20, qx0: CX - RW - 42, stepX: -CAR_GAP, stepY:  0       },
   },
   right: {  /* внешняя — правые повороты + прямо */
-    N: { lx: CX - 60, qy0: CY - RW - 32, stepX:  0,       stepY: -CAR_GAP },
-    S: { lx: CX + 60, qy0: CY + RW + 32, stepX:  0,       stepY:  CAR_GAP },
-    E: { ly: CY - 60, qx0: CX + RW + 32, stepX:  CAR_GAP, stepY:  0       },
-    W: { ly: CY + 60, qx0: CX - RW - 32, stepX: -CAR_GAP, stepY:  0       },
+    N: { lx: CX - 60, qy0: CY - RW - 42, stepX:  0,       stepY: -CAR_GAP },
+    S: { lx: CX + 60, qy0: CY + RW + 42, stepX:  0,       stepY:  CAR_GAP },
+    E: { ly: CY - 60, qx0: CX + RW + 42, stepX:  CAR_GAP, stepY:  0       },
+    W: { ly: CY + 60, qx0: CX - RW - 42, stepX: -CAR_GAP, stepY:  0       },
   },
 };
 
@@ -111,10 +111,10 @@ const PED_CROSS_PATH = {
 };
 
 const PED_WAIT_POS = {
-  north: { x: CX - RW - 34, y: CY - RW - 34, dx: 0, dy: 6 },
-  south: { x: CX + RW + 34, y: CY + RW + 34, dx: 0, dy: -6 },
-  west:  { x: CX - RW - 34, y: CY + RW + 34, dx: 6, dy: 0 },
-  east:  { x: CX + RW + 34, y: CY - RW - 34, dx: -6, dy: 0 },
+  north: { x: CX - RW - 24, y: CY - RW - 14, dx: -6, dy: 0 },
+  south: { x: CX + RW + 24, y: CY + RW + 14, dx: 6, dy: 0 },
+  west:  { x: CX - RW - 24, y: CY + RW + 14, dx: -6, dy: 0 },
+  east:  { x: CX + RW + 24, y: CY - RW - 14, dx: 6, dy: 0 },
 };
 
 /* ---- Цвет линзы ---- */
@@ -595,18 +595,19 @@ class UI {
     const lW = 16, lH = 14;
     const lx = leftModule === 'left' ? x - lW - 5 : x + W + 4;
     const ly = y + H - lH - 3;
+    const lCx = lx + lW / 2;
     ctx.fillStyle = isLeftGreen ? '#166534' : CANVAS_COLORS.body;
     this._roundRect(ctx, lx, ly, lW, lH, 3); ctx.fill();
     ctx.strokeStyle = '#334155'; ctx.lineWidth = 0.7; ctx.stroke();
     if (isLeftGreen) {
-      const grd2 = ctx.createRadialGradient(cx_, ly + lH / 2, 1, cx_, ly + lH / 2, 7);
+      const grd2 = ctx.createRadialGradient(lCx, ly + lH / 2, 1, lCx, ly + lH / 2, 7);
       grd2.addColorStop(0, TL_ON.green); grd2.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = grd2;
-      ctx.beginPath(); ctx.arc(cx_, ly + lH / 2, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(lCx, ly + lH / 2, 9, 0, Math.PI * 2); ctx.fill();
     }
     ctx.fillStyle = isLeftGreen ? CANVAS_COLORS.green : '#64748b';
     ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('←', cx_, ly + lH - 2);
+    ctx.fillText('←', lCx, ly + lH - 2);
   }
 
   /* ---- Пешеходные сигналы ---- */
@@ -623,21 +624,21 @@ class UI {
       const green = this.ix.pedLights[crossing] === 'green';
       /* Фон-шайба */
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, 7, 0, Math.PI * 2);
+      ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
       ctx.fillStyle = CANVAS_COLORS.body;
       ctx.fill();
       /* Цветная точка */
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+      ctx.arc(pos.x, pos.y, 4.5, 0, Math.PI * 2);
       ctx.fillStyle = green ? CANVAS_COLORS.green : CANVAS_COLORS.red;
       ctx.fill();
       if (green) {
         /* Свечение */
-        const grd = ctx.createRadialGradient(pos.x, pos.y, 1, pos.x, pos.y, 10);
+        const grd = ctx.createRadialGradient(pos.x, pos.y, 1, pos.x, pos.y, 8);
         grd.addColorStop(0, 'rgba(34,197,94,0.36)');
         grd.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = grd;
-        ctx.beginPath(); ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2); ctx.fill();
       }
     }
   }
@@ -780,7 +781,7 @@ class UI {
         py = path.y0 + (path.y1 - path.y0) * ped.progress;
       }
 
-      const r = ped.state === 'waiting' ? 3 : 4;
+      const r = ped.state === 'waiting' ? 2.6 : 4;
       ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2);
       ctx.fillStyle = ped.state === 'waiting' ? CANVAS_COLORS.warning : CANVAS_COLORS.green;
       ctx.fill();
